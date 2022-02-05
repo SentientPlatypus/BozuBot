@@ -32,12 +32,12 @@ class bozuPointHandler(commands.Cog):
     @commands.command()
     @commands.has_permissions(administrator = True)
     async def awardRole(self, ctx, role:nextcord.Role, amountOfBozuPoints:int):
-        for member in ctx.guild:
+        async for member in ctx.guild.fetch_members(limit=None):
             if role in member.roles:
                 pointDB.update_one({"id":member.id}, {"$inc":{"bozuPoints":amountOfBozuPoints}})
 
         embed = nextcord.Embed(
-            title = f"Members of {role.display_name} have been awarded {amountOfBozuPoints} bozu Points!",
+            title = f"Members of {role.name} have been awarded {amountOfBozuPoints} bozu Points!",
             color = nextcord.Color.gold()
             )
         embed.timestamp = ctx.message.created_at
@@ -81,7 +81,6 @@ class bozuPointHandler(commands.Cog):
             return m.author == ctx.author and m.channel == ctx.channel and m.content.lower() == "yes"
         
         confirm = await self.client.wait_for('message', check=check, timeout=10)
-        await prompt.delete()
         if confirm:
             rankings = pointDB.find().sort("bozuPoints",-1)
             for x in rankings:
