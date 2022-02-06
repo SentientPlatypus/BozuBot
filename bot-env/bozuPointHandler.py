@@ -45,16 +45,32 @@ class bozuPointHandler(commands.Cog):
         await ctx.channel.send(embed=embed)
 
     @commands.command()
+    async def points(self, ctx, p:nextcord.Member = None):
+        if not p:
+            p = ctx.author
+        
+        points = pointDB.find_one({"id":p.id}, {"bozuPoints"})["bozuPoints"]
+
+        embed = nextcord.Embed(title = f"{p.display_name}'s Bozu points!", color = nextcord.Color.green())
+        embed.add_field(name = "Bozu Points:", value = f"```{points}BP```")
+        embed.set_author(name = p.display_name, icon_url=p.avatar)
+        embed.set_thumbnail(url = constants.SPINNING_COIN_GIF)
+        embed.timestamp = ctx.message.created_at
+        await ctx.channel.send(embed = embed)
+
+
+    @commands.command()
     async def leaderboard(self, ctx):
         rankings = pointDB.find().sort("bozuPoints",-1)
         i=1
         embed = nextcord.Embed(title = "Bozu Point Leaderboard", color = ctx.author.color)
-        embed.set_thumbnail(url=ctx.guild.icon)
+        embed.set_thumbnail(url=constants.SPINNING_COIN_GIF)
+        embed.timestamp = ctx.message.created_at
         for x in rankings:
             try:
                 temp = ctx.guild.get_member(int(x["id"])).display_name
                 tempBP = x["bozuPoints"]
-                embed.add_field(name = f"{i}: {temp}", value = f"Bozu points: `{tempBP}`", inline = False) 
+                embed.add_field(name = f"{i}: {temp}", value = f"Bozu points: `{tempBP}BP`", inline = False) 
                 i+=1
                 if i==11:
                     break

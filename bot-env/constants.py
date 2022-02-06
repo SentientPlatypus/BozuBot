@@ -19,3 +19,6 @@ USER_DATABASE_DEFAULTS = [
 SPINNING_COIN_GIF = "https://cdn.dribbble.com/users/6257/screenshots/3833147/coin.gif"
 EXCLAMATION_MARK_IMG = "https://thumbs.dreamstime.com/b/vector-pixel-exclamation-point-vector-pixel-exclamation-point-speech-buble-isolated-white-background-s-s-style-design-123217138.jpg"
 PRAYING_CHEEMS_IMG = "https://i.imgflip.com/5d1e3o.png"
+
+
+DEFAULT_GROUP_CHAT_CATEGORY = "Group Chats"

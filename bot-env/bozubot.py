@@ -16,6 +16,7 @@ import helper as helper
 import bozuPointHandler
 import roleHandler
 import databaseHandler
+import helpCommand
 
 
 
@@ -37,6 +38,10 @@ for i in range(len(roleHandlerCog)):
 databaseHandlerCog = [databaseHandler]
 for i in range(len(databaseHandlerCog)):
     databaseHandlerCog[i].setup(client)
+
+helpCommandCog = [helpCommand]
+for i in range(len(helpCommandCog)):
+    helpCommandCog[i].setup(client)
 
 
 
@@ -78,6 +83,9 @@ async def on_command_error(ctx, error):
     elif isinstance(error, asyncio.TimeoutError):
         embed.title = "Timeout"
         embed.description= "```you took too long for that interaction, dummy.```"
+    elif isinstance(error, commands.MissingPermissions):
+        embed.title = "Missing Permissions"
+        embed.description= "```You dont have le perms```"
     else:
         print("failed")
         print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
@@ -90,7 +98,7 @@ async def on_command_error(ctx, error):
 
 @client.event
 async def on_ready():
-    print("we out")
+    print("--------------------------------------we out--------------------------------------")
     await helper.updatePresence(client)
 
 @client.event
