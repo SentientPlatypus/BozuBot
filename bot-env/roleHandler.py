@@ -68,7 +68,7 @@ class roleHandler(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command()
+    @commands.command(name = "sortBySpreadsheet", help = "will manage member roles and group chats based on the spreadsheet. rishi, dont mind the parameters, they have default values. just call !sortBySpreadsheet. ")
     @commands.has_permissions(administrator= True)
     async def sortBySpreadsheet(self, ctx,
         spreadSheetName:str = "testerData",
@@ -111,6 +111,7 @@ class roleHandler(commands.Cog):
             return m.author == ctx.author and m.channel == ctx.channel and m.content.lower() == "yes"
         
         confirm = await self.client.wait_for('message', check=check, timeout=10)
+        await ctx.trigger_typing()
         if confirm:
             groupChatCategory = await getChannel(ctx.guild, constants.DEFAULT_GROUP_CHAT_CATEGORY) if await hasChannel(ctx.guild, constants.DEFAULT_GROUP_CHAT_CATEGORY) else await ctx.guild.create_category(constants.DEFAULT_GROUP_CHAT_CATEGORY)
             recievedData = helper.getSpreadSheetData(r"C:\Users\trexx\Documents\PYTHON CODE LOL\CODEBOZU\bozuBot\bot-env\credentials.json", spreadSheetName)
@@ -156,10 +157,7 @@ class roleHandler(commands.Cog):
                                 await other.remove_roles(role)
                             except:
                                 pass
-                        
-                                                
-                        
-                    
+
                     overwrites = {
                         ctx.guild.default_role: nextcord.PermissionOverwrite(read_messages=False),
                         createdRole: nextcord.PermissionOverwrite(read_messages = True)

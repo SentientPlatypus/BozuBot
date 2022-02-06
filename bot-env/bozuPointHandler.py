@@ -12,7 +12,7 @@ class bozuPointHandler(commands.Cog):
 
 
 
-    @commands.command()
+    @commands.command(name = "awardMember", help = "Awards a member the specified amount of bozu points")
     @commands.has_permissions(administrator = True)
     async def awardMember(self, ctx, user:nextcord.Member, amountOfBozuPoints:int):
         pointDB.update_one({"id":user.id}, {"$inc":{"bozuPoints":amountOfBozuPoints}})
@@ -27,7 +27,7 @@ class bozuPointHandler(commands.Cog):
         embed.set_thumbnail(url=constants.SPINNING_COIN_GIF)
         await ctx.channel.send(embed=embed)
 
-    @commands.command()
+    @commands.command(name = "awardRole", help = "Awards all members who have the specified role the specified amount of bozu points")
     @commands.has_permissions(administrator = True)
     async def awardRole(self, ctx, role:nextcord.Role, amountOfBozuPoints:int):
         async for member in ctx.guild.fetch_members(limit=None):
@@ -44,7 +44,7 @@ class bozuPointHandler(commands.Cog):
         embed.set_thumbnail(url=constants.SPINNING_COIN_GIF)
         await ctx.channel.send(embed=embed)
 
-    @commands.command()
+    @commands.command(name = "points", help = "displays the bozu points a user has")
     async def points(self, ctx, p:nextcord.Member = None):
         if not p:
             p = ctx.author
@@ -59,8 +59,8 @@ class bozuPointHandler(commands.Cog):
         await ctx.channel.send(embed = embed)
 
 
-    @commands.command()
-    async def leaderboard(self, ctx):
+    @commands.command(name = "leaderboard", help = "displays top bozuPoint holders")
+    async def leaderboard(self, ctx, limit:int=10):
         rankings = pointDB.find().sort("bozuPoints",-1)
         i=1
         embed = nextcord.Embed(title = "Bozu Point Leaderboard", color = ctx.author.color)
@@ -72,14 +72,14 @@ class bozuPointHandler(commands.Cog):
                 tempBP = x["bozuPoints"]
                 embed.add_field(name = f"{i}: {temp}", value = f"Bozu points: `{tempBP}BP`", inline = False) 
                 i+=1
-                if i==11:
+                if i > limit:
                     break
             except:
                 pass
         await ctx.channel.send(embed=embed)
 
 
-    @commands.command()
+    @commands.command(name = "resetBozuPoints", help = "resets ALL bozu points to 0")
     @commands.has_permissions(administrator = True)
     async def resetBozuPoints(self, ctx):
         embed=nextcord.Embed(

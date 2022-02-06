@@ -47,7 +47,7 @@ for i in range(len(helpCommandCog)):
 
 
 
-@client.command()
+@client.command(name = "info", help = "Gives information about Bozu!")
 async def info(ctx):
     embed=nextcord.Embed(title="BozuBot Information", color=nextcord.Color.purple())
     embed.description= "Servers: %g\nMembers:%g"%(len(client.guilds), helper.getNumMembers(client))
