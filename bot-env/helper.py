@@ -5,9 +5,6 @@ import gspread
 import pandas as pd
 from oauth2client.service_account import ServiceAccountCredentials
 
-def getMongo():
-    #return MongoClient(f"mongodb+srv://gene:{constants.MONGO_PASSWORD}@cluster0.gyzmg.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-    return MongoClient(f'mongodb+srv://gene:{constants.MONGO_PASSWORD}@cluster0.gyzmg.mongodb.net/myFirstDatabase?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE')
 
 def getNumMembers(client):
     membersz=0

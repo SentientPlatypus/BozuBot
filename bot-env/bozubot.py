@@ -1,5 +1,4 @@
 import sys
-import requests
 from nextcord.ext import commands
 import nextcord
 from googleSpreadSheetReading import getSpreadSheetData
@@ -51,7 +50,7 @@ for i in range(len(helpCommandCog)):
 async def info(ctx):
     embed=nextcord.Embed(title="BozuBot Information", color=nextcord.Color.purple())
     embed.description= "Servers: %g\nMembers:%g"%(len(client.guilds), helper.getNumMembers(client))
-    embed.add_field(name="Resources", value="Apply for fellowship [Here](https://codebozu.com)")
+    embed.add_field(name="Resources", value="Check [Here](https://codebozu.com)")
     embed.set_thumbnail(url=client.user.avatar)
     await ctx.channel.send(embed=embed)
 

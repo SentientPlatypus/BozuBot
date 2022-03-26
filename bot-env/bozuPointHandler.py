@@ -2,9 +2,22 @@ import nextcord
 from nextcord.ext import commands
 import helper
 import constants
+import databaseHandler
+import json
 
-cluster = helper.getMongo()
-pointDB = cluster["discord"]["bozuPoints"]
+
+
+
+def getBozuPoints( user:nextcord.Member):
+    return databaseHandler.getUserValue(user, "bozuPoints")
+
+async def updatebozuPoints(guild:nextcord.Guild, user:nextcord.Member, amountToIncrementBy):
+    """INCREMENTS BozuPoints. TO SET BozuPoints, user set bozuPoints"""
+    databaseHandler.incrementUserValue(user, "bozuPoints", amountToIncrementBy)
+
+async def setbozuPoints(guild:nextcord.Guild, user:nextcord.Member, amountTOincrementBY):
+    databaseHandler.updateUserValue(user, "bozuPoints", 0)
+
 
 class bozuPointHandler(commands.Cog):
     def __init__(self, client):
@@ -15,7 +28,7 @@ class bozuPointHandler(commands.Cog):
     @commands.command(name = "awardMember", help = "Awards a member the specified amount of bozu points")
     @commands.has_permissions(administrator = True)
     async def awardMember(self, ctx, user:nextcord.Member, amountOfBozuPoints:int):
-        pointDB.update_one({"id":user.id}, {"$inc":{"bozuPoints":amountOfBozuPoints}})
+        await updatebozuPoints(ctx.guild, user, amountOfBozuPoints)
 
         embed = nextcord.Embed(
             title = f"{user.display_name} has been awarded {amountOfBozuPoints} bozu Points!",
@@ -32,7 +45,8 @@ class bozuPointHandler(commands.Cog):
     async def awardRole(self, ctx, role:nextcord.Role, amountOfBozuPoints:int):
         async for member in ctx.guild.fetch_members(limit=None):
             if role in member.roles:
-                pointDB.update_one({"id":member.id}, {"$inc":{"bozuPoints":amountOfBozuPoints}})
+                await updatebozuPoints(ctx.guild, member, amountOfBozuPoints)
+
 
         embed = nextcord.Embed(
             title = f"Members of {role.name} have been awarded {amountOfBozuPoints} bozu Points!",
@@ -49,7 +63,7 @@ class bozuPointHandler(commands.Cog):
         if not p:
             p = ctx.author
         
-        points = pointDB.find_one({"id":p.id}, {"bozuPoints"})["bozuPoints"]
+        points = getBozuPoints(p)
 
         embed = nextcord.Embed(title = f"{p.display_name}'s Bozu points!", color = nextcord.Color.green())
         embed.add_field(name = "Bozu Points:", value = f"```{points}BP```")
@@ -59,23 +73,27 @@ class bozuPointHandler(commands.Cog):
         await ctx.channel.send(embed = embed)
 
 
-    @commands.command(name = "leaderboard", help = "displays top bozuPoint holders")
+    @commands.command(name = "leaderboard", aliases = ["lb"],help = "displays top BozuPoint holders")
     async def leaderboard(self, ctx, limit:int=10):
-        rankings = pointDB.find().sort("bozuPoints",-1)
+        with open(constants.USER_DATABASE_PATH, "r") as read:
+            dictionary = json.load(read)
+            sortedIdDictionary = {k:v for k, v in sorted(dictionary["users"].items(), key=lambda item:-item[1]["bozuPoints"])}
         i=1
-        embed = nextcord.Embed(title = "Bozu Point Leaderboard", color = ctx.author.color)
+        embed = nextcord.Embed(title = "BozuPoint Leaderboard", color = ctx.author.color)
         embed.set_thumbnail(url=constants.SPINNING_COIN_GIF)
         embed.timestamp = ctx.message.created_at
+        rankings = sortedIdDictionary.keys()
         for x in rankings:
             try:
-                temp = ctx.guild.get_member(int(x["id"])).display_name
-                tempBP = x["bozuPoints"]
-                embed.add_field(name = f"{i}: {temp}", value = f"Bozu points: `{tempBP}BP`", inline = False) 
+                temp = ctx.guild.get_member(int(x)).display_name
+                tempSC = sortedIdDictionary[x]["bozuPoints"]
+                embed.add_field(name = f"{i}: {temp}", value = f"`{tempSC} BozuPoint`", inline = False) 
                 i+=1
                 if i > limit:
                     break
             except:
                 pass
+
         await ctx.channel.send(embed=embed)
 
 
@@ -87,7 +105,7 @@ class bozuPointHandler(commands.Cog):
                 description="reply with `yes` to confirm", 
                 color= nextcord.Color.red(), 
                 )
-        embed.set_thumbnail(url = constants.EXCLAMATION_MARK_IMG)
+        embed.set_thumbnail(url = constants.ERROR_EXCLAMATION_ICON)
         embed.timestamp = ctx.message.created_at
         prompt = await ctx.channel.send(embed=embed)
 
@@ -96,14 +114,16 @@ class bozuPointHandler(commands.Cog):
         
         confirm = await self.client.wait_for('message', check=check, timeout=10)
         if confirm:
-            rankings = pointDB.find().sort("bozuPoints",-1)
-            for x in rankings:
-                pointDB.update_one({"id":x["id"]}, {"$set":{"bozuPoints":0}})
+            rankings = databaseHandler.getDictionary()
+            guild:nextcord.Guild = ctx.guild
+            async for member in guild.fetch_members(limit=None):
+                await setbozuPoints(ctx.guild, member, 0)
+
             embed=nextcord.Embed(
-                title = f"{ctx.author.display_name} has reset bozu points!", 
+                title = f"{ctx.author.display_name} has reset bozuPoints!", 
                 description = "@here", color = nextcord.Color.blue(), 
                 )
-            embed.set_thumbnail(url = constants.EXCLAMATION_MARK_IMG)
+            embed.set_thumbnail(url = constants.ERROR_EXCLAMATION_ICON)
             embed.timestamp =ctx.message.created_at
             await ctx.channel.send(embed=embed)
 
