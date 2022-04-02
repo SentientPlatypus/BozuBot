@@ -10,7 +10,7 @@ import asyncio
 ##-------------HELPERS-------------------------------
 import constants as constants
 import helper as helper
-
+from keep_alive import keep_alive
 ##-------------COGS-----------------------------------
 import bozuPointHandler
 import roleHandler
@@ -104,4 +104,5 @@ async def on_ready():
 async def on_member_join(member):
     await helper.updatePresence(client)
 
+keep_alive()
 client.run(constants.TOKEN)

@@ -1,7 +1,7 @@
 import os
 
 
-TOKEN = "OTM5MjY4NDc1NTY0NzI0MzA0.Yf2X7w.zs1nYVFcO35o_z-5tR_0zyQM5AQ"
+TOKEN = "OTM5MjY4NDc1NTY0NzI0MzA0.Yf2X7w.t_JxReCIRfYYcSLgJeiBxHoqqLc"
 CMD_PREFIX = "!"
 
 ##--------------------MONGO------------------------
