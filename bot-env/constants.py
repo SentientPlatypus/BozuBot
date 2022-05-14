@@ -1,11 +1,11 @@
 import os
 
 
-TOKEN = "OTM5MjY4NDc1NTY0NzI0MzA0.Yf2X7w.t_JxReCIRfYYcSLgJeiBxHoqqLc"
+TOKEN = "SECRET"
 CMD_PREFIX = "!"
 
 ##--------------------MONGO------------------------
-MONGO_PASSWORD = "browski"
+MONGO_PASSWORD = "SECRET"
 
 
 USER_DATABASE_DEFAULTS = {
